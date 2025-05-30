@@ -5,21 +5,23 @@ import { LayoutMain } from './components/Layauts/LayoutMain.tsx'
 import './index.css'
 import { Cart } from './pages/cart/Cart.tsx'
 import { Home } from './pages/home/Home.tsx'
+import { CartProvider } from './context/CartProvider.tsx'
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <LayoutMain/>,
+    element: <LayoutMain />,
     children: [
-      { index:true, element: <Home/> },
-      { path: "/cart", element: <Cart />}
+      { index: true, element: <Home /> },
+      { path: "/cart", element: <Cart /> }
     ]
   }
 ])
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    {/*<App />*/}
-    <RouterProvider router={router} />
+    <CartProvider>
+      <RouterProvider router={router} />
+    </CartProvider>
   </StrictMode>,
 )
