@@ -22,7 +22,7 @@ export const CartModal: FC<Props> = ({ handleShowCartModal }) => {
 
     const totalPay = () =>{
         const total = cartItems.reduce((acc, item) => {
-            return acc * item.price * item.quantity
+            return acc + item.price * item.quantity
         }, 0)
         return total
     }
