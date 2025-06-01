@@ -3,28 +3,40 @@ import { Hero } from "../../components/ui/Hero"
 import styles from "./Home.module.css"
 import { CardProduct } from "../../components/ui/CardProduct"
 import { getProducts } from "../../service"
-import type { Product } from "../../interface"
+//import type { Product } from "../../interface"
 import { Toaster } from "sonner"
-import { useQuery } from "@tanstack/react-query"
+import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query"
+
 
 export const Home = () => {
 
-  const {data, isLoading, error} = useQuery({queryKey: ['products'], queryFn:getProducts})
+  const queryClient = useQueryClient()
 
-  /*const [products, setProducts] = useState<Product[]>([])
+  const [page, setPage] = useState(0)
+
+  const { data, isLoading, error, isPlaceholderData } = useQuery({ queryKey: ['products', page], queryFn: () => getProducts(page), placeholderData: keepPreviousData, staleTime: 5000 })
+
+  useEffect(() => {
+    if (!isPlaceholderData && data?.hasMore) {
+      queryClient.prefetchQuery({
+        queryKey: ['products', page + 1],
+        queryFn: () => getProducts(page + 1),
+      })
+    }
+
+  }, [data, isPlaceholderData, page, queryClient])
+
+
+  /*
+
+  FORMA SIN REACT-QUERY
+  
+  const [products, setProducts] = useState<Product[]>([])
   const [error, setError] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   
-  const getProducts = async () => {
-    try {
-      const response = await fetch('http://localhost:3000/products')
-      const data = await response.json()
-      setProducts(data)
-    } catch (error) {
-      console.error(error)
-    }
-  }*/
- 
+*/
+
 
   /*useEffect(() => {
     getProducts().then((data) => {
@@ -40,13 +52,22 @@ export const Home = () => {
   return (
     <>
       <Hero />
-      <Toaster richColors/>
+      <Toaster richColors />
       {isLoading && <p>Loading...</p>}
       {error && <p>Something went wrong</p>}
       <div className={styles.container}>
-        {data?.map((product) => (
-          <CardProduct key={product.tail} product={product}/>
+        {data?.products.map((product) => (
+          <CardProduct key={product.tail} product={product} />
         ))}
+      </div>
+      <div className={styles.paginationContainer}>
+        <button onClick={() => setPage((old) => Math.max(old - 1, 0))} disabled={page === 0} className={styles.paginationButton}>previus page</button>
+        <div className={styles.paginationActive}>
+          <span>{page + 1}</span>
+        </div>
+        <button onClick={() => setPage((old) => (data?.hasMore ? old + 1 : old))}
+          disabled={isPlaceholderData || !data?.hasMore} className={styles.paginationButton}
+        >next page</button>
       </div>
     </>
   )
