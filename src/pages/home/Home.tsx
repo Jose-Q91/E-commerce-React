@@ -5,15 +5,17 @@ import { CardProduct } from "../../components/ui/CardProduct"
 import { getProducts } from "../../service"
 import type { Product } from "../../interface"
 import { Toaster } from "sonner"
+import { useQuery } from "@tanstack/react-query"
 
 export const Home = () => {
 
-  const [products, setProducts] = useState<Product[]>([])
+  const {data, isLoading, error} = useQuery({queryKey: ['products'], queryFn:getProducts})
 
+  /*const [products, setProducts] = useState<Product[]>([])
   const [error, setError] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   
-  /* const getProducts = async () => {
+  const getProducts = async () => {
     try {
       const response = await fetch('http://localhost:3000/products')
       const data = await response.json()
@@ -22,8 +24,9 @@ export const Home = () => {
       console.error(error)
     }
   }*/
+ 
 
-  useEffect(() => {
+  /*useEffect(() => {
     getProducts().then((data) => {
       setProducts(data)
     }).catch(()=>{
@@ -33,7 +36,7 @@ export const Home = () => {
     })
   }, [])
   //console.log(products)
-
+*/
   return (
     <>
       <Hero />
@@ -41,7 +44,7 @@ export const Home = () => {
       {isLoading && <p>Loading...</p>}
       {error && <p>Something went wrong</p>}
       <div className={styles.container}>
-        {products.map((product) => (
+        {data?.map((product) => (
           <CardProduct key={product.tail} product={product}/>
         ))}
       </div>
