@@ -3,6 +3,8 @@ import styles from "./CardCredit.module.css"
 import { toast } from "sonner"
 
 import React, { useState } from "react"
+import useCartContext from "../../../hooks/useCartContext"
+import type { CartProduct } from "../../../interface"
 
 export const CardCredit = () => {
 
@@ -14,6 +16,7 @@ export const CardCredit = () => {
         focus: ''
     })
 
+    const {dispatch} = useCartContext()
     const { number, name, expiry, cvc } = cardData
 
     //VAMOS SETEANDO EL cardData
@@ -51,6 +54,9 @@ export const CardCredit = () => {
             cvc: '',
             focus: ''
         })
+
+        //Limpiar productos
+        dispatch({type: "CLEAR_CART", payload:{} as CartProduct})
     }
 
     return (
